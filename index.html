@@ -395,7 +395,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
   <div class="outro">
     <p>No gifts, nothing specific to wear — <em>just show up hungry and ready to dance all night.</em></p>
     <button class="again" id="again" type="button">Drop the ball again</button>
-    <p class="credit">Music: &ldquo;Disco Medusae&rdquo; Kevin MacLeod (<a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a>) &middot; Licensed under Creative Commons: By Attribution 4.0 &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">creativecommons.org/licenses/by/4.0</a><br>Edited for this page: looped, with an original whoosh effect added.</p>
+    <p class="credit">Music: &ldquo;Disco Medusae&rdquo; Kevin MacLeod (<a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a>) &middot; Licensed under Creative Commons: By Attribution 4.0 &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">creativecommons.org/licenses/by/4.0</a><br>Edited for this page: cut, looped, and mixed with an original whoosh effect.</p>
   </div>
 </main>
 
@@ -441,6 +441,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
   var theta = 0, omega = 0.42, t = 0, last = 0, spinT = 0, burstT = 0;
   var tiles=[], specks=[], shards=[], sparks=[], blobs=[];
   var blobA = 0, speckMul = 1, shock = null, running = false;
+  var SPIN = 3.1;      // seconds of spin-up; the music's drop sits at exactly this point in the audio file
   var px = .5, py = .4, tx = .5, ty = .4;   // smoothed / target "gaze" — follows the finger or cursor
   var Lx=-0.45, Ly=0.55, Lz=0.70;
 
@@ -677,7 +678,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
 
   /* ---------- sound: whoosh over the song's opening, then the song on a seamless loop ---------- */
   var night = document.getElementById('night'), muteBtn = document.getElementById('mute');
-  var SONG_OFFSET = 0, LOOP_TAIL = 3.5, isMuted = false, wantPlaying = false;     // song starts on the tap; file ends with a clean copy of its first 3.5 s
+  var SONG_OFFSET = 0, LOOP_TAIL = 4.0, isMuted = false, wantPlaying = false;     // file = build-up + drop + track, then a clean 4 s copy of its start for the loop
   try { isMuted = localStorage.getItem('nt-muted') === '1'; } catch(e){}
   function applyMute(){
     if (night) night.muted = isMuted;
@@ -721,6 +722,13 @@ body:not(.revealed){overflow:hidden;height:100vh}
   document.addEventListener('visibilitychange', function(){ if (document.hidden) onHide(); else onShow(); });
   window.addEventListener('pagehide', onHide);
 
+  // Spin progress follows the music's own clock while it runs, so the burst lands on the drop
+  // whatever delay the phone adds before audio starts; falls back to wall time if there is no audio.
+  function spinProgress(){
+    if (night && !night.paused && night.currentTime > 0.05 && night.currentTime < SPIN + 1.5) return Math.min(1, night.currentTime / SPIN);
+    return Math.min(1, spinT / SPIN);
+  }
+
   /* ---------- transitions ---------- */
   function startSpin(){
     if (state !== 'idle') return;
@@ -728,7 +736,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
     if (reduce){ revealNow(); return; }
     state = 'spin'; spinT = 0; wake();
     intro.classList.add('spinning');
-    setTimeout(function(){ if (state === 'spin') burst(); }, 1700);   // insurance if rAF is throttled
+    setTimeout(function(){ if (state === 'spin') burst(); }, SPIN*1000 + 600);   // insurance if rAF is throttled
   }
   function burst(){
     state = 'burst'; burstT = 0; shards = []; sparks = [];
@@ -781,7 +789,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
     var dt = Math.min(.05, (ts-last)/1000); last = ts; t += dt;
 
     if (state === 'spin'){
-      spinT += dt; var k = Math.min(1, spinT/1.45);
+      spinT += dt; var k = spinProgress();
       omega = .42 + Math.pow(k,3)*17; speckMul = 1 + k*1.8;
       if (k >= 1) burst();
     } else if (state === 'burst'){
@@ -808,7 +816,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
     drawBlobs();
     drawSpecks();
     if (state === 'idle') drawBall(0);
-    else if (state === 'spin') drawBall(Math.min(1, spinT/1.45));
+    else if (state === 'spin') drawBall(spinProgress());
     drawShards(dt);
     drawShock(dt);
     requestAnimationFrame(frame);
