@@ -351,7 +351,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
 </div>
 
 <div class="ticker" aria-hidden="true"><div class="ticker-track" id="track"></div></div>
-<audio id="night" preload="auto"><source src="audio/night.m4a?v=a216a048" type="audio/mp4"><source src="audio/night.aac" type="audio/aac"><source src="audio/night.mp3" type="audio/mpeg"></audio>
+<audio id="night" preload="auto"><source src="audio/night.m4a?v=df47bc44" type="audio/mp4"><source src="audio/night.aac" type="audio/aac"><source src="audio/night.mp3" type="audio/mpeg"></audio>
 <button class="mute" id="mute" type="button" aria-label="Mute music" aria-pressed="false">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path class="body" d="M4 9.5v5h3.6L13 19V5L7.6 9.5H4z"/><path class="wave" d="M16 9a4.2 4.2 0 0 1 0 6"/><path class="wave" d="M18.6 6.4a8 8 0 0 1 0 11.2"/><path class="slash" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg>
 </button>
@@ -395,7 +395,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
   <div class="outro">
     <p>No gifts, nothing specific to wear — <em>just show up hungry and ready to dance all night.</em></p>
     <button class="again" id="again" type="button">Drop the ball again</button>
-    <p class="credit">Music: &ldquo;Disco Medusae&rdquo; Kevin MacLeod (<a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a>) &middot; Licensed under Creative Commons: By Attribution 4.0 &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">creativecommons.org/licenses/by/4.0</a><br>Edited for this page: cut, looped, and mixed with an original whoosh effect.</p>
+    <p class="credit">Music: &ldquo;Drive By Night&rdquo; by Vodovoz.</p>
   </div>
 </main>
 
@@ -441,7 +441,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
   var theta = 0, omega = 0.42, t = 0, last = 0, spinT = 0, burstT = 0;
   var tiles=[], specks=[], shards=[], sparks=[], blobs=[];
   var blobA = 0, speckMul = 1, shock = null, running = false;
-  var SPIN = 3.1;      // seconds of spin-up; the music's drop sits at exactly this point in the audio file
+  var SPIN = 4.69;      // seconds of spin-up = where the track's own drop sits (the song plays from its first second)
   var px = .5, py = .4, tx = .5, ty = .4;   // smoothed / target "gaze" — follows the finger or cursor
   var Lx=-0.45, Ly=0.55, Lz=0.70;
 
@@ -678,7 +678,7 @@ body:not(.revealed){overflow:hidden;height:100vh}
 
   /* ---------- sound: whoosh over the song's opening, then the song on a seamless loop ---------- */
   var night = document.getElementById('night'), muteBtn = document.getElementById('mute');
-  var SONG_OFFSET = 0, LOOP_TAIL = 4.0, isMuted = false, wantPlaying = false;     // file = build-up + drop + track, then a clean 4 s copy of its start for the loop
+  var SONG_OFFSET = 0, LOOP_TAIL = 5.5, isMuted = false, wantPlaying = false;     // file = build-up + drop + track, then a clean 4 s copy of its start for the loop
   try { isMuted = localStorage.getItem('nt-muted') === '1'; } catch(e){}
   function applyMute(){
     if (night) night.muted = isMuted;
